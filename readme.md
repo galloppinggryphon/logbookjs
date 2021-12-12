@@ -12,7 +12,7 @@ Utility for creating custom console logging functions.
 * Compatible with both Typescript and vanilla Javascript
 
 ## How to use
-<br>
+
 See [src/logbook.js](./src/logbook.js).
 
 ## Screenshot
