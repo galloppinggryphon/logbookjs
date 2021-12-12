@@ -1,0 +1,27 @@
+{
+	// "root": true,
+
+	"globals": {
+		"_logConfig": "readonly",
+		"_log": "readonly",
+		"_debug": "readonly",
+		"_info": "readonly",
+		"_warn": "readonly",
+		"_error": "readonly",
+		"_group": "readonly",
+		"_groupEnd": "readonly",
+
+		"_L1": "readonly",
+		"_L2": "readonly",
+		"_L3": "readonly",
+		"_L4": "readonly",
+		"_yellow": "readonly",
+		"_bigYellow": "readonly",
+		"_red": "readonly",
+		"_purple": "readonly",
+		"_blue": "readonly"
+	},
+	"env": {
+		"browser": true
+	}
+}

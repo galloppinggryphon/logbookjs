@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"checkJs": true,
+		"skipLibCheck": false,
+
+		//For the interpreter
+		"lib": ["dom", "dom.iterable", "es2020"],
+
+		//Enable dynamic imports with import()
+		"module": "es2020", //dynamic imports
+
+		//For the interpreter?
+		"target": "es2020",
+
+		// Mimic node.js module resolution
+		"moduleResolution": "node",
+
+		"baseUrl": "src",
+	}
+}
