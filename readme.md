@@ -33,7 +33,7 @@ To avoid 'not defined' (`no-undef`) problems, include the following in `.eslintr
 
 This project includes global typings for custom `console` functions.
 
-In case they need to be included in `tsconfig.js` or `jsconfig.js`, type definitions are located in [@types/index.d.ts](./node_modules/logbookjs/@types/index.d.ts) (or when locally installed, probably [node\_modules/logbookjs/@types/index.d.ts](./node_modules/logbookjs/@types/index.d.ts)).
+In case they need to be included in `tsconfig.js` or `jsconfig.js`, type definitions are located in [@types/index.d.ts](@types/index.d.ts) (or when locally installed, probably [node\_modules/logbookjs/@types/index.d.ts](./node_modules/logbookjs/@types/index.d.ts)).
 
 ## License
 <br>
