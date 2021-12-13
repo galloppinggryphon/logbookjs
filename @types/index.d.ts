@@ -46,12 +46,12 @@ type GlobalLoggers = LogbookSettings['IsGlobal'] extends true
 
 declare global {
 	/**
-	 * Augment global console
+	 * Augment custom loggers to console
 	 */
 	interface Console extends ExtendedConsole {}
 
 	/**
-	 * Augment window
+	 * Augment window - destructure loggers for quick access (if enabled)
 	 *
 	 * Note: TS does not accept accessing globals without window.*
 	 */

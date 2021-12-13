@@ -1,8 +1,9 @@
 {
   "name": "logbookjs",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Utility for creating custom console logging functions.",
   "main": "src/logbook.js",
+	"types": "./@types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/galloppinggryphon/logbookjs.git"
