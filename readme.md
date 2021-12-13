@@ -8,7 +8,7 @@ Utility for creating custom console logging functions.
 * Preserves call location (file, line number)
 * Create different log styles with CSS (background, foreground, font size, etc)
 * Filter which log messages to print to console
-* Expose (destructure) console logging functions as globals (optional)
+* Enable quick access to console loggers (e.g. \_log()), enabled in the global scope (optional, very useful for development)
 * Compatible with both Typescript and vanilla Javascript
 
 ## How to use
@@ -33,7 +33,7 @@ To avoid 'not defined' (`no-undef`) problems, include the following in `.eslintr
 
 This project includes global typings for custom `console` functions.
 
-In case they need to be included in `tsconfig.js` or `jsconfig.js`, type definitions are located in [@types/index.d.ts](@types/index.d.ts) (or when locally installed, probably [node\_modules/logbookjs/@types/index.d.ts](./node_modules/logbookjs/@types/index.d.ts)).
+In case they need to be included in `tsconfig.js` or `jsconfig.js`, default type definitions are located in [@types/index.d.ts](@types/index.d.ts) (or when locally installed, probably [node\_modules/logbookjs/@types/index.d.ts](./node_modules/logbookjs/@types/index.d.ts)).
 
 ## License
 <br>
