@@ -1,0 +1,16 @@
+{
+  "name": "logbookjs",
+  "version": "1.0.0",
+  "description": "Utility for creating custom console logging functions.",
+  "main": "src/logbook.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galloppinggryphon/logbookjs.git"
+  },
+  "author": "Bjornar Egede-Nissen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/galloppinggryphon/logbookjs/issues"
+  },
+  "homepage": "https://github.com/galloppinggryphon/logbookjs#readme"
+}
