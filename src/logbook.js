@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict'
 /**
  * Name: Logbook JS - Console Logging Utility
@@ -61,17 +62,23 @@
 /** @typedef  {Object<string, LogbookItem>} LogbookConfigList */
 /** @typedef  {Object<string, ConsoleMethod>} LogbookList */
 /** @typedef {keyof typeof LogLevels} validLogLevels */
+/** @typedef {typeof DefaultSettings} xSettings */
+/**
+ * @typedef {Object} Settings
+ * @property {validLogLevels} [minLevel] Log all messages of EQUAL or LESSER level.
+ * @property {string} [name] Name to use if the Logbook is attached to the window object
+ * @property {boolean} [overwriteConsole] Enable overwriting built-in console functions
+ * @property {string} [globalPrefix] Rename logger functions if exported as globals
+ * @property {boolean} [global] Export logger functions to global scope
+ */
 
 /**
  * Default config.
  *
- * @readonly
- * @enum {any}
+ * @type {Settings}
  */
-const Settings = {
-	/** @type {validLogLevels} */
+const DefaultSettings = {
 	minLevel: 'all',
-	/** Name to use if the Logbook is attached to the window object */
 	name: 'Logbook',
 	overwriteConsole: false,
 	globalPrefix: '',
@@ -225,9 +232,9 @@ const __void = ( ...data ) => null
  * @param {Settings} settings
  * @param {LogbookConfigList} loggers
  */
-function Logbook( settings = Settings, loggers = {} ) {
+function Logbook( settings, loggers = {} ) {
 	const currentConsole = console
-	const logbookSettings = Settings
+	const logbookSettings = DefaultSettings
 	const logbookStyles = defaultLogbookStyles
 
 	setup( settings )
@@ -326,12 +333,12 @@ function Logbook( settings = Settings, loggers = {} ) {
 	 * @internal
 	 * @param {Settings} _settings
 	 */
-	function setup( _settings ) {
-		const s = _settings || {}
-		logbookSettings.minLevel = isValid( getLevelInt( s.minLevel ), logbookSettings.minLevel, 0 )
-		logbookSettings.global = isValid( s.global, logbookSettings.global )
-		logbookSettings.overwriteConsole = isValid( s.overwriteConsole, logbookSettings.overwriteConsole )
-		logbookSettings.globalPrefix = isValid( s.globalPrefix, logbookSettings.globalPrefix, '' )
+	function setup( _settings = DefaultSettings ) {
+		const { global, globalPrefix, minLevel, overwriteConsole } = _settings
+		logbookSettings.minLevel = isValid( getLevelInt( minLevel ), logbookSettings.minLevel, 0 )
+		logbookSettings.global = isValid( global, logbookSettings.global )
+		logbookSettings.overwriteConsole = isValid( overwriteConsole, logbookSettings.overwriteConsole )
+		logbookSettings.globalPrefix = isValid( globalPrefix, logbookSettings.globalPrefix, '' )
 	}
 
 	/**
@@ -394,10 +401,10 @@ function Logbook( settings = Settings, loggers = {} ) {
 	function editLogger( name, config ) {
 		const { level, style: loggerStyle } = config
 
-		let levelN = getLevelInt( level )
-		if ( ! levelN ) {
+		let levelIndex = getLevelInt( level )
+		if ( ! levelIndex ) {
 			config.level = 'all'
-			levelN = 1
+			levelIndex = 1
 		}
 
 		config.style = loggerStyle
@@ -421,7 +428,7 @@ function Logbook( settings = Settings, loggers = {} ) {
 			return
 		}
 
-		const fn = levelN >= getLevelInt( logbookSettings.minLevel ) ? logger : __void
+		const fn = levelIndex >= getLevelInt( logbookSettings.minLevel ) ? logger : __void
 
 		if ( logbookSettings.overwriteConsole && window.console[ name ] ) {
 			window.console[ name ] = fn
@@ -464,4 +471,3 @@ function isValid( value, fallback, compare = undefined ) {
 }
 
 export default Logbook
-export { __log }

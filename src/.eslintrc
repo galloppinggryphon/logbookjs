@@ -83,5 +83,11 @@
 		"switch-colon-spacing": ["warn"],
 		"template-curly-spacing": ["warn", "always"],
 		"template-tag-spacing": ["warn", "always"]
+	},
+
+	"settings": {
+		"jsdoc": {
+			"mode": "jsdoc"
+		}
 	}
 }
