@@ -1,6 +1,6 @@
 {
   "name": "logbookjs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Utility for creating custom console logging functions.",
   "main": "src/logbook.js",
 	"types": "./@types/index.d.ts",
