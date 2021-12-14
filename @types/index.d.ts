@@ -1,61 +1,51 @@
-type LogbookSettings = {
-	IsGlobal: true;
-	GlobalPrefix: "_";
-	CustomLoggers: [
-		"L1",
-		"L2",
-		"L3",
-		"L4",
-		"yellow",
-		"bigYellow",
-		"red",
-		"purple",
-		"green",
-		"blue"
-	];
-	GlobalizeBuiltinLoggers: [
-		"log",
-		"debug",
-		"info",
-		"error",
-		"warn",
-		"group",
-		"groupEnd"
-	];
-}
-
-type LoggerLogFn = (...messages: unknown[]) => void;
-
-type ExtendedConsole = LogbookSettings['IsGlobal'] extends true
-	? {
-			readonly [Key in LogbookSettings['CustomLoggers'][number]]: LoggerLogFn;
-	  }
-	: {};
-
-type CustomGlobalLoggers = LogbookSettings['IsGlobal'] extends true
-	? {
-			readonly [Key in LogbookSettings['CustomLoggers'][number] as `${LogbookSettings['GlobalPrefix']}${Key}`]: LoggerLogFn;
-	  }
-	: {};
-
-type GlobalLoggers = LogbookSettings['IsGlobal'] extends true
-	? CustomGlobalLoggers & {
-			readonly [Key in LogbookSettings['GlobalizeBuiltinLoggers'][number] as `${LogbookSettings['GlobalPrefix']}${Key}`]: LoggerLogFn;
-	  }
-	: {};
+//~ Define custom console logger names ~
+type CustomLoggers = [
+	"L1",
+	"L2",
+	"L3",
+	"L4",
+	"yellow",
+	"bigYellow",
+	"red",
+	"purple",
+	"green",
+	"blue"
+];
 
 declare global {
-	/**
-	 * Augment custom loggers to console
-	 */
+	// ~ Expose console loggers at top level (without console.*) ~
+	//Must be defined with the configured prefix
+
+	//Custom functions
+	const [
+		_L1,
+		_L2,
+		_L3,
+		_L4,
+		yellow,
+		bigYellow,
+		red,
+		purple,
+		green,
+		blue,
+	]: LoggerFn[];
+
+	//built-in console functions
+	const [_log, _warn, _error, _info]: LoggerFn[];
+
+	//Declare console extensions
 	interface Console extends ExtendedConsole {}
 
-	/**
-	 * Augment window - destructure loggers for quick access (if enabled)
-	 *
-	 * Note: TS does not accept accessing globals without window.*
-	 */
-	interface Window extends GlobalLoggers {}
 }
+
+type LoggerFNs = {
+	[Key in CustomLoggers[number]]: LoggerFn;
+};
+
+type LoggerFn = (...messages: unknown[]) => void;
+
+type ExtendedConsole = {
+	readonly [Key in CustomLoggers[number]]: LoggerFn;
+};
 
 export {};
