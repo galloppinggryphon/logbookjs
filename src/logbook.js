@@ -58,14 +58,14 @@
 /** @typedef {string|Array<string>} StyleItem */
 /** @typedef {Object<string, StyleItem>} LogbookStyles */
 /** @typedef {function(...string):void} ConsoleMethod window.console method */
-/** @typedef {{ fn: ConsoleMethod, level?: validLogLevels, style?: StyleItem }} LogbookItem */
-/** @typedef  {Object<string, LogbookItem>} LogbookConfigList */
+/** @typedef {{ fn: ConsoleMethod, level?: validLogLevels, style?: StyleItem }} Logger */
+/** @typedef  {Object<string, Logger>} LogbookConfigList */
 /** @typedef  {Object<string, ConsoleMethod>} LogbookList */
 /** @typedef {keyof typeof LogLevels} validLogLevels */
 /** @typedef {typeof DefaultSettings} xSettings */
 /**
  * @typedef {Object} Settings
- * @property {validLogLevels} [minLevel] Log all messages of EQUAL or LESSER level.
+ * @property {validLogLevels} [threshold] Log all messages of EQUAL or LESSER level.
  * @property {string} [name] Name to use if the Logbook is attached to the window object
  * @property {boolean} [overwriteConsole] Enable overwriting built-in console functions
  * @property {string} [globalPrefix] Rename logger functions if exported as globals
@@ -78,7 +78,7 @@
  * @type {Settings}
  */
 const DefaultSettings = {
-	minLevel: 'all',
+	threshold: 'all',
 	name: 'Logbook',
 	overwriteConsole: false,
 	globalPrefix: '',
@@ -93,9 +93,9 @@ const DefaultSettings = {
  */
 const LogLevels = {
 	all: 1,
-	log: 2,
-	trace: 3,
-	debug: 4,
+	debug: 2,
+	log: 3,
+	trace: 4,
 	info: 5,
 	warn: 6,
 	error: 7,
@@ -163,12 +163,12 @@ const defaultLoggers = {
 	group: { fn: console.group, level: 'log' },
 	groupEnd: { fn: console.groupEnd, level: 'log' },
 
-	L1: { fn: console.log, level: 'log' },
-	L2: { fn: console.log, level: 'log' },
-	L3: { fn: console.log, level: 'log' },
-	L4: { fn: console.log, level: 'log' },
+	L1: { fn: console.log, level: 'info' },
+	L2: { fn: console.log, level: 'info' },
+	L3: { fn: console.log, level: 'info' },
+	L4: { fn: console.log, level: 'info' },
 
-	note: { fn: console.log, level: 'debug' },
+	note: { fn: console.log, level: 'info' },
 	blue: { fn: console.log, level: 'debug' },
 	red: { fn: console.log, level: 'debug' },
 	purple: { fn: console.log, level: 'debug' },
@@ -204,7 +204,7 @@ const __void = ( ...data ) => null
  * settings:
  * ```
  * {
- * 	minLevel?: string,
+ * 	threshold?: string,
  * 	name?: string,
  * 	globalPrefix?: string,
  * 	overwriteConsole?: boolean,
@@ -236,6 +236,7 @@ function Logbook( settings, loggers = {} ) {
 	const currentConsole = console
 	const logbookSettings = DefaultSettings
 	const logbookStyles = defaultLogbookStyles
+	let thresholdIndex = 0
 
 	setup( settings )
 
@@ -247,15 +248,19 @@ function Logbook( settings, loggers = {} ) {
 	// === Return public methods ===
 	const api = {
 
+		get settings() {
+			return logbookSettings
+		},
+
 		/**
-		 * Change level and register/unregister loggers.
+		 * Change threshold and register/unregister loggers.
 		 *
 		 * Note: mutates exported loggers.
 		 *
-		 * @param {validLogLevels} level
+		 * @param {validLogLevels} threshold
 		 */
-		setLevel( level ) {
-			logbookSettings.minLevel = getLevelInt( level ) ? level : 'all'
+		setLevel( threshold ) {
+			logbookSettings.threshold = getLevelInt( threshold ) ? threshold : 'all'
 			registerLoggers()
 		},
 
@@ -287,16 +292,16 @@ function Logbook( settings, loggers = {} ) {
 		 * Create new logger or modify an existing logger.
 		 *
 		 * @param {string} name
-		 * @param {LogbookItem} config
+		 * @param {Logger} config
 		 */
 		register( name, config ) {
-			return generateLoggerFn( name, config )
+			return getLoggerFn( name, config )
 		},
 
 		/**
 		 * Export all logger functions wrapped in an object.
 		 *
-		 * Note: destructured functions will NOT be updated if the configuration or level is changed after export.
+		 * Note: destructured functions will NOT be updated if the configuration or threshold is changed after export.
 		 */
 		export() {
 			return currentConsole
@@ -334,15 +339,16 @@ function Logbook( settings, loggers = {} ) {
 	 * @param {Settings} _settings
 	 */
 	function setup( _settings = DefaultSettings ) {
-		const { global, globalPrefix, minLevel, overwriteConsole } = _settings
-		logbookSettings.minLevel = isValid( getLevelInt( minLevel ), logbookSettings.minLevel, 0 )
+		const { global, globalPrefix, threshold, overwriteConsole } = _settings
+		logbookSettings.threshold = isValid( threshold, logbookSettings.threshold, 'all' )
+		thresholdIndex = getLevelInt( logbookSettings.threshold )
 		logbookSettings.global = isValid( global, logbookSettings.global )
 		logbookSettings.overwriteConsole = isValid( overwriteConsole, logbookSettings.overwriteConsole )
 		logbookSettings.globalPrefix = isValid( globalPrefix, logbookSettings.globalPrefix, '' )
 	}
 
 	/**
-	 * Process logger configurations and register loggers based on current level.
+	 * Process logger configurations and register loggers based on current threshold.
 	 *
 	 * @internal
 	 */
@@ -360,10 +366,10 @@ function Logbook( settings, loggers = {} ) {
 	 *
 	 * @internal
 	 * @param {string} name
-	 * @param {LogbookItem} config
+	 * @param {Logger} config
 	 * @return {ConsoleMethod} Returns a wrapped console method.
 	 */
-	function generateLoggerFn( name, config ) {
+	function getLoggerFn( name, config ) {
 		const { fn: consoleFn, style: loggerStyle } = config
 
 		// ~ The magic happens here ~
@@ -396,7 +402,7 @@ function Logbook( settings, loggers = {} ) {
 	 *
 	 * @internal
 	 * @param {string} name
-	 * @param {LogbookItem} config
+	 * @param {Logger} config
 	 */
 	function editLogger( name, config ) {
 		const { level, style: loggerStyle } = config
@@ -422,13 +428,13 @@ function Logbook( settings, loggers = {} ) {
 			loggerConfigs[ name ] = config
 		}
 
-		const logger = generateLoggerFn( name, config )
+		const logger = getLoggerFn( name, config )
 
 		if ( ! logger ) {
 			return
 		}
 
-		const fn = levelIndex >= getLevelInt( logbookSettings.minLevel ) ? logger : __void
+		const fn = levelIndex >= thresholdIndex ? logger : __void
 
 		if ( logbookSettings.overwriteConsole && window.console[ name ] ) {
 			window.console[ name ] = fn
